@@ -65,6 +65,9 @@ public class PostService {
     public List<Post> getDraftsByAuthor(Long authorId){
         return postRepository.findPostsByAuthorIdAndPostStatus(authorId, PostStatus.DRAFT);
     }
+    public List<Post> getAllDrafts(){
+        return postRepository.findPostByPostStatus(PostStatus.DRAFT);
+    }
     public List<Post> getPostsByCategory(Long categoryId){
         categoryRepository.findById(categoryId).orElseThrow(()-> new RuntimeException("category not found with id :"+categoryId));
         return postRepository.findPostsByCategoryId(categoryId);
