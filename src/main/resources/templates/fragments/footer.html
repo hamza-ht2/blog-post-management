@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="border-t border-gray-200 mt-16">
+    <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+
+        <a th:href="@{/home}" class="font-serif text-xl font-bold tracking-tight">
+            Blog<span class="accent">.</span>
+        </a>
+
+        <div class="flex items-center gap-6">
+            <a th:href="@{/posts}" class="text-sm text-gray-500 hover-accent transition-colors">Posts</a>
+            <a th:href="@{/search}" class="text-sm text-gray-500 hover-accent transition-colors">Search</a>
+            <a th:href="@{/auth/register}" class="text-sm text-gray-500 hover-accent transition-colors">Join</a>
+        </div>
+
+        <p class="text-sm text-gray-400">&copy; 2025 Blog. All rights reserved.</p>
+
+    </div>
+</footer>
+</body>
+</html>

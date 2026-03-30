@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <div class="max-w-6xl mx-auto px-6 py-12">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="font-serif text-3xl font-bold text-gray-900">
+                Search results
+                <span th:if="${query != null and !#strings.isEmpty(query)}"
+                      class="text-gray-400 font-normal text-2xl"
+                      th:text="'for &quot;' + ${query} + '&quot;'">
+                </span>
+            </h1>
+        </div>
+
+        <!-- Search bar -->
+        <form th:action="@{/posts/search}" method="get" class="flex gap-3 mb-10">
+            <input type="text"
+                   name="title"
+                   th:value="${query}"
+                   placeholder="Search posts..."
+                   class="flex-1 px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-orange-400 transition-colors bg-gray-50"/>
+            <button type="submit"
+                    class="bg-accent text-white px-6 py-3 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity">
+                Search
+            </button>
+        </form>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(posts)}" class="text-center py-20">
+            <p class="text-gray-400 text-lg">No posts found.</p>
+            <a th:href="@{/posts}" class="mt-4 inline-block text-sm accent font-medium hover:underline">
+                Browse all posts
+            </a>
+        </div>
+
+        <!-- Results -->
+        <div th:unless="${#lists.isEmpty(posts)}" class="divide-y divide-gray-100">
+            <article th:each="post : ${posts}" class="py-8 flex gap-8 items-start">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold accent">
+                            <span th:text="${#strings.substring(post.author.firstName, 0, 1).toUpperCase()}">A</span>
+                        </div>
+                        <a th:href="@{/authors/{username}(username=${post.author.username})}"
+                           th:text="${post.author.firstName + ' ' + post.author.lastName}"
+                           class="text-sm font-medium text-gray-700 hover-accent transition-colors">
+                        </a>
+                    </div>
+                    <a th:href="@{/posts/{slug}(slug=${post.slug})}">
+                        <h2 class="font-serif text-xl font-bold text-gray-900 leading-snug hover-accent transition-colors mb-2"
+                            th:text="${post.title}">
+                        </h2>
+                    </a>
+                    <p class="text-sm text-gray-500 leading-relaxed line-clamp-2" th:text="${post.excerpt}"></p>
+                    <div class="flex items-center gap-4 mt-4">
+                        <span class="text-xs text-gray-400"
+                              th:text="${#temporals.format(post.publishedAt, 'MMM dd, yyyy')}">
+                        </span>
+                        <span class="text-xs text-gray-400" th:text="${post.readingTime + ' min read'}"></span>
+                        <span th:if="${post.category != null}" class="text-xs font-medium accent" th:text="${post.category.name}"></span>
+                    </div>
+                </div>
+                <div th:if="${post.coverImage != null}" class="shrink-0 w-32 h-24 rounded-lg overflow-hidden bg-gray-100">
+                    <img th:src="${post.coverImage}" th:alt="${post.title}" class="w-full h-full object-cover"/>
+                </div>
+            </article>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

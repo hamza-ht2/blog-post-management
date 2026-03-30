@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+
+        <!-- Author Header -->
+        <div class="flex items-start justify-between mb-10 pb-10 border-b border-gray-200">
+            <div class="flex items-center gap-6">
+                <div class="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center text-3xl font-bold accent"
+                     th:if="${author.photoProfile == null}">
+                    <span th:text="${#strings.substring(author.firstName, 0, 1).toUpperCase()}">A</span>
+                </div>
+                <img th:if="${author.photoProfile != null}"
+                     th:src="${author.photoProfile}"
+                     th:alt="${author.firstName}"
+                     class="w-20 h-20 rounded-full object-cover"/>
+                <div>
+                    <h1 class="font-serif text-3xl font-bold text-gray-900"
+                        th:text="${author.firstName + ' ' + author.lastName}">
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1" th:text="'@' + ${author.username}"></p>
+                    <div class="flex items-center gap-4 mt-2">
+                        <span class="text-xs text-gray-400"
+                              th:text="${totalFollowers + ' followers'}">
+                        </span>
+                        <span class="text-xs text-gray-400"
+                              th:text="${totalFollowing + ' following'}">
+                        </span>
+                        <span th:if="${author.country != null}"
+                              class="text-xs text-gray-400"
+                              th:text="${author.country}">
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Follow / Unfollow -->
+            <div sec:authorize="isAuthenticated()">
+                <form th:action="@{/authors/{username}/follow(username=${author.username})}" method="post">
+                    <button type="submit"
+                            class="bg-accent text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
+                        Follow
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bio -->
+        <div th:if="${author.bio != null}" class="mb-10">
+            <p class="text-gray-600 leading-relaxed" th:text="${author.bio}"></p>
+            <a th:if="${author.websiteUrl != null}"
+               th:href="${author.websiteUrl}"
+               target="_blank"
+               class="text-sm accent hover:underline mt-2 inline-block"
+               th:text="${author.websiteUrl}">
+            </a>
+        </div>
+
+        <!-- Posts -->
+        <div>
+            <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Posts</h2>
+
+            <div th:if="${#lists.isEmpty(posts)}" class="text-center py-12">
+                <p class="text-gray-400">No published posts yet.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(posts)}" class="divide-y divide-gray-100">
+                <article th:each="post : ${posts}" class="py-6 flex gap-6 items-start">
+                    <div class="flex-1 min-w-0">
+                        <a th:href="@{/posts/{slug}(slug=${post.slug})}">
+                            <h3 class="font-serif text-lg font-bold text-gray-900 hover-accent transition-colors mb-1"
+                                th:text="${post.title}">
+                            </h3>
+                        </a>
+                        <p class="text-sm text-gray-500 line-clamp-2" th:text="${post.excerpt}"></p>
+                        <div class="flex items-center gap-4 mt-3">
+                            <span class="text-xs text-gray-400"
+                                  th:text="${#temporals.format(post.publishedAt, 'MMM dd, yyyy')}">
+                            </span>
+                            <span class="text-xs text-gray-400"
+                                  th:text="${post.readingTime + ' min read'}">
+                            </span>
+                            <span th:if="${post.category != null}"
+                                  class="text-xs font-medium accent"
+                                  th:text="${post.category.name}">
+                            </span>
+                        </div>
+                    </div>
+                    <div th:if="${post.coverImage != null}"
+                         class="shrink-0 w-24 h-16 rounded-lg overflow-hidden bg-gray-100">
+                        <img th:src="${post.coverImage}"
+                             th:alt="${post.title}"
+                             class="w-full h-full object-cover"/>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

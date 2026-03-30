@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <!-- Hero -->
+    <section class="border-b border-gray-200 py-20 px-6">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="font-serif text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+                Ideas worth <span class="accent">reading.</span>
+            </h1>
+            <p class="mt-6 text-lg text-gray-500 leading-relaxed">
+                A place for curious minds. Discover stories, thinking, and expertise
+                from writers on any topic that matters to you.
+            </p>
+            <div class="mt-8 flex items-center justify-center gap-4">
+                <a th:href="@{/auth/register}"
+                   class="bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
+                    Start writing
+                </a>
+                <a th:href="@{/posts}"
+                   class="text-sm font-medium text-gray-600 hover-accent transition-colors">
+                    Explore posts →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="border-b border-gray-200 py-6 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                <a th:href="@{/posts}"
+                   class="shrink-0 text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:border-orange-400 hover-accent transition-colors">
+                    All
+                </a>
+                <a th:each="category : ${categories}"
+                   th:href="@{/posts/category/{id}(id=${category.id})}"
+                   th:text="${category.name}"
+                   class="shrink-0 text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:border-orange-400 hover-accent transition-colors">
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Posts Feed -->
+    <section class="py-12 px-6">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- Empty state -->
+            <div th:if="${#lists.isEmpty(posts)}" class="text-center py-20">
+                <p class="text-gray-400 text-lg">No posts yet. Be the first to write.</p>
+                <a th:href="@{/auth/register}"
+                   class="mt-4 inline-block bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
+                    Get started
+                </a>
+            </div>
+
+            <!-- Posts grid -->
+            <div th:unless="${#lists.isEmpty(posts)}" class="divide-y divide-gray-100">
+                <article th:each="post : ${posts}" class="py-8 flex gap-8 items-start">
+
+                    <!-- Content -->
+                    <div class="flex-1 min-w-0">
+
+                        <!-- Author -->
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold accent">
+                                <span th:text="${#strings.substring(post.author.firstName, 0, 1).toUpperCase()}">A</span>
+                            </div>
+                            <a th:href="@{/authors/{username}(username=${post.author.username})}"
+                               th:text="${post.author.firstName + ' ' + post.author.lastName}"
+                               class="text-sm font-medium text-gray-700 hover-accent transition-colors">
+                            </a>
+                        </div>
+
+                        <!-- Title & Excerpt -->
+                        <a th:href="@{/posts/{slug}(slug=${post.slug})}">
+                            <h2 class="font-serif text-xl font-bold text-gray-900 leading-snug hover-accent transition-colors mb-2"
+                                th:text="${post.title}">
+                            </h2>
+                        </a>
+                        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2"
+                           th:text="${post.excerpt}">
+                        </p>
+
+                        <!-- Meta -->
+                        <div class="flex items-center gap-4 mt-4">
+                            <span class="text-xs text-gray-400"
+                                  th:text="${#temporals.format(post.publishedAt, 'MMM dd, yyyy')}">
+                            </span>
+                            <span class="text-xs text-gray-400"
+                                  th:text="${post.readingTime + ' min read'}">
+                            </span>
+                            <span th:if="${post.category != null}"
+                                  class="text-xs font-medium accent"
+                                  th:text="${post.category.name}">
+                            </span>
+                            <span class="text-xs text-gray-400"
+                                  th:text="${post.viewCount + ' views'}">
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- Cover Image -->
+                    <div th:if="${post.coverImage != null}"
+                         class="shrink-0 w-32 h-24 rounded-lg overflow-hidden bg-gray-100">
+                        <img th:src="${post.coverImage}"
+                             th:alt="${post.title}"
+                             class="w-full h-full object-cover"/>
+                    </div>
+
+                </article>
+            </div>
+
+            <!-- See all posts link -->
+            <div th:unless="${#lists.isEmpty(posts)}" class="mt-8 text-center">
+                <a th:href="@{/posts}"
+                   class="text-sm font-medium accent hover:underline">
+                    See all posts →
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

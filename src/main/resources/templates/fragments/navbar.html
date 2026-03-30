@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="navbar" class="border-b border-gray-200 bg-white sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+
+        <!-- Logo -->
+        <a th:href="@{/home}" class="font-serif text-2xl font-bold tracking-tight">
+            Blog<span class="accent">.</span>
+        </a>
+
+        <!-- Center Nav -->
+        <div class="hidden md:flex items-center gap-8">
+            <a th:href="@{/posts}" class="text-sm font-medium text-gray-600 hover-accent transition-colors">Posts</a>
+            <a th:href="@{/search}" class="text-sm font-medium text-gray-600 hover-accent transition-colors">Search</a>
+        </div>
+
+        <!-- Right Nav -->
+        <div class="flex items-center gap-4">
+
+            <!-- Not logged in -->
+            <div sec:authorize="isAnonymous()" class="flex items-center gap-3">
+                <a th:href="@{/auth/login}"
+                   class="text-sm font-medium text-gray-600 hover-accent transition-colors">
+                    Sign in
+                </a>
+                <a th:href="@{/auth/register}"
+                   class="text-sm font-medium bg-accent text-white px-4 py-2 rounded-full hover:opacity-90 transition-opacity">
+                    Get started
+                </a>
+            </div>
+
+            <!-- Logged in -->
+            <div sec:authorize="isAuthenticated()" class="flex items-center gap-4">
+                <a th:href="@{/posts/create}"
+                   class="text-sm font-medium text-gray-600 hover-accent transition-colors">
+                    Write
+                </a>
+                <a th:href="@{/dashboard}"
+                   class="text-sm font-medium text-gray-600 hover-accent transition-colors">
+                    Dashboard
+                </a>
+
+                <!-- Admin -->
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/admin}"
+                   class="text-sm font-medium text-gray-600 hover-accent transition-colors">
+                    Admin
+                </a>
+
+                <!-- Profile -->
+                <a th:href="@{/profile/settings}"
+                   class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-sm font-semibold accent">
+                    <span sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
+                </a>
+
+                <!-- Logout -->
+                <form th:action="@{/auth/logout}" method="post">
+                    <button type="submit"
+                            class="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</nav>
+</body>
+</html>

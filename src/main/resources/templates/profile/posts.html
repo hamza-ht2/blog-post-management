@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="font-serif text-3xl font-bold text-gray-900">My Posts</h1>
+                <p class="mt-1 text-sm text-gray-500">All your posts in one place.</p>
+            </div>
+            <a th:href="@{/posts/create}"
+               class="bg-accent text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
+                Write new post
+            </a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex items-center gap-6 border-b border-gray-200 mb-8">
+            <a th:href="@{/profile/posts}"
+               class="text-sm font-medium pb-3 border-b-2 border-orange-400 accent">
+                All
+            </a>
+            <a th:href="@{/profile/drafts}"
+               class="text-sm font-medium pb-3 border-b-2 border-transparent text-gray-500 hover-accent transition-colors">
+                Drafts
+            </a>
+            <a th:href="@{/profile/rejected}"
+               class="text-sm font-medium pb-3 border-b-2 border-transparent text-gray-500 hover-accent transition-colors">
+                Rejected
+            </a>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(posts)}" class="text-center py-20">
+            <p class="text-gray-400 text-lg">No posts yet.</p>
+            <a th:href="@{/posts/create}"
+               class="mt-4 inline-block bg-accent text-white px-6 py-3 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
+                Write your first post
+            </a>
+        </div>
+
+        <!-- Posts -->
+        <div th:unless="${#lists.isEmpty(posts)}" class="divide-y divide-gray-100">
+            <article th:each="post : ${posts}" class="py-6 flex gap-6 items-start">
+                <div class="flex-1 min-w-0">
+
+                    <!-- Status badge -->
+                    <div class="flex items-center gap-2 mb-2">
+                        <span th:if="${post.postStatus.name() == 'PUBLISHED'}"
+                              class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                            Published
+                        </span>
+                        <span th:if="${post.postStatus.name() == 'DRAFT'}"
+                              class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                            Draft
+                        </span>
+                        <span th:if="${post.postStatus.name() == 'REJECTED'}"
+                              class="text-xs font-medium text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+                            Rejected
+                        </span>
+                    </div>
+
+                    <a th:href="@{/posts/{slug}(slug=${post.slug})}">
+                        <h3 class="font-serif text-lg font-bold text-gray-900 hover-accent transition-colors mb-1"
+                            th:text="${post.title}">
+                        </h3>
+                    </a>
+                    <p class="text-sm text-gray-500 line-clamp-2" th:text="${post.excerpt}"></p>
+
+                    <div class="flex items-center gap-4 mt-3">
+                        <span class="text-xs text-gray-400"
+                              th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">
+                        </span>
+                        <span class="text-xs text-gray-400"
+                              th:text="${post.readingTime + ' min read'}">
+                        </span>
+                        <span class="text-xs text-gray-400"
+                              th:text="${post.viewCount + ' views'}">
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="shrink-0 flex items-center gap-2">
+                    <a th:href="@{/posts/{id}/edit(id=${post.id})}"
+                       class="text-xs font-medium border border-gray-200 text-gray-600 px-3 py-1.5 rounded-lg hover:border-orange-400 hover-accent transition-colors">
+                        Edit
+                    </a>
+                    <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post"
+                          onsubmit="return confirm('Delete this post?')">
+                        <button type="submit"
+                                class="text-xs font-medium border border-gray-200 text-red-400 px-3 py-1.5 rounded-lg hover:border-red-300 transition-colors">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+
+            </article>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
